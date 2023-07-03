@@ -19,7 +19,7 @@ services:
     depends_on:
       - stats-db
     ports:
-      - "9090:8080"
+      - "9090:9090"
     environment:
       - DB_NAME=stats
       - POSTGRES_USER=root
