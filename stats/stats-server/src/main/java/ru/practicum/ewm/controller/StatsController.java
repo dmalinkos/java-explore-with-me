@@ -29,7 +29,7 @@ public class StatsController {
     @GetMapping("/stats")
     public List<ViewStats> getViewStats(@RequestParam("start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
                                         @RequestParam("end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
-                                        @RequestParam("uris") List<String> uris,
+                                        @RequestParam(name = "uris", required = false) List<String> uris,
                                         @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
         log.info(String.format("[StatsController]: GET /stats" +
                 "\nstart:\t%s\nend:\t%s\nuris:\t%s\nunique:\t%s", start, end, uris, unique));
