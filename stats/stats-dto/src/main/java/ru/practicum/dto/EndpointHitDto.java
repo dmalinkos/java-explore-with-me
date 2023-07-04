@@ -17,10 +17,10 @@ import java.time.LocalDateTime;
 public class EndpointHitDto {
     private Long id;
     @Pattern(regexp = "^\\w+(.\\w+)*", message = "'app' incorrect input")
-    @NotBlank(message = "'app' can't be null/blank")
+    @NotBlank(message = "'app' can't be null or blank")
     private String app;
     @Pattern(regexp = "^/\\w+(/\\d+)*", message = "'uri' incorrect input")
-    @NotBlank(message = "'uri' can't be null/blank")
+    @NotBlank(message = "'uri' can't be null or blank")
     private String uri;
     @Pattern(regexp = "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.)" +
             "{3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$", message = "'ip' incorrect input")

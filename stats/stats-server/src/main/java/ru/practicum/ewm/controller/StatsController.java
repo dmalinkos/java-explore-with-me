@@ -2,31 +2,27 @@ package ru.practicum.ewm.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.service.StatsService;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStats;
 import ru.practicum.ewm.mapper.EndpointHitMapper;
+import ru.practicum.ewm.service.StatsService;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Slf4j
 public class StatsController {
     private final StatsService statsService;
     private final EndpointHitMapper mapper;
 
     @PostMapping("/hit")
-    public EndpointHitDto saveEndpointHit(@Valid EndpointHitDto endpointHitDto) {
-        log.info(String.format("[StatsController]: POST /hit \nendpointHitDto: {%s}", endpointHitDto));
+    public EndpointHitDto saveEndpointHit(@Valid @RequestBody EndpointHitDto endpointHitDto) {
+        log.info(String.format("[StatsController]: POST /hit endpointHitDto: {%s}", endpointHitDto));
         return mapper.toDto(statsService.saveEndpointHit(mapper.toEntity(endpointHitDto)));
     }
 
