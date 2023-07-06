@@ -3,6 +3,7 @@ package ru.practicum.stats.client;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -15,15 +16,15 @@ public class BaseClient {
         this.rest = rest;
     }
 
-    protected <T> ResponseEntity<Object> post(String path, T body) {
+    protected <T> ResponseEntity<?> post(String path, T body) {
         return makeAndSendRequest(HttpMethod.POST, path, null, body);
     }
 
-    protected ResponseEntity<Object> get(String path, Map<String, Object> parameters) {
+    protected ResponseEntity<?> get(String path, Map<String, Object> parameters) {
         return makeAndSendRequest(HttpMethod.GET, path, parameters, null);
     }
 
-    private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable Map<String, Object> parameters, @Nullable T body) {
+    private <T> ResponseEntity<?> makeAndSendRequest(HttpMethod method, String path, @Nullable Map<String, Object> parameters, @Nullable T body) {
         HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders());
 
         ResponseEntity<Object> statsServerResponse;
@@ -35,11 +36,13 @@ public class BaseClient {
             }
         } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
+        } catch (ResourceAccessException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
         return prepareStatsServerResponse(statsServerResponse);
     }
 
-    private static ResponseEntity<Object> prepareStatsServerResponse(ResponseEntity<Object> response) {
+    private static ResponseEntity<?> prepareStatsServerResponse(ResponseEntity<?> response) {
         if (response.getStatusCode().is2xxSuccessful()) {
             return response;
         }
