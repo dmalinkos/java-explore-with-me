@@ -3,9 +3,11 @@ package ru.practicum.ewm.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.constants.Constants;
+import ru.practicum.ewm.exception.BadTimeException;
 import ru.practicum.ewm.model.EndpointHit;
 import ru.practicum.ewm.repository.StatsRepository;
-import ru.practicum.dto.ViewStats;
+import ru.practicum.ewm.dto.ViewStats;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +26,11 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public List<ViewStats> getViewStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         List<ViewStats> viewStats;
+        if (start.isAfter(end)) {
+            throw new BadTimeException(String.format("rangeEnd %s is after rangeStart %s",
+                    start.format(Constants.DATE_TIME_FORMATTER),
+                    end.format(Constants.DATE_TIME_FORMATTER)));
+        }
         if (unique) {
             if (uris != null) {
                 viewStats = statsRepository.getUniqueViewStatsBetweenStartAndEndByUris(start, end, uris);
