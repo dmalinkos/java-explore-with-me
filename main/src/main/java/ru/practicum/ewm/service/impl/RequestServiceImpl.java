@@ -115,7 +115,7 @@ public class RequestServiceImpl implements RequestService {
                 RequestDto requestDto = requestMapper.mapToDto(request);
                 List<RequestDto> confirmedRequests = result.getConfirmedRequests();
                 confirmedRequests.add(requestDto);
-                result.setRejectedRequests(confirmedRequests);
+                result.setConfirmedRequests(confirmedRequests);
             } else {
                 request.setStatus(RequestStatus.REJECTED);
                 RequestDto requestDto = requestMapper.mapToDto(request);
@@ -125,6 +125,7 @@ public class RequestServiceImpl implements RequestService {
             }
         }
         event.setConfirmedRequests((long) confirmedRequest);
+        eventRepository.save(event);
         requestRepository.saveAll(requestsToUpdate);
         return result;
     }

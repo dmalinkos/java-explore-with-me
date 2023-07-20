@@ -31,7 +31,10 @@ import ru.practicum.ewm.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -156,7 +159,9 @@ public class EventServiceImpl implements EventService {
             expression = expression.and(qEvent.eventDate.before(rangeEnd));
         }
         PageRequest pageRequest = PageRequest.of(Math.toIntExact(from / size), Math.toIntExact(size));
-        return eventRepository.findAll(expression, pageRequest).getContent().stream()
+        List<Event> events = eventRepository.findAll(expression, pageRequest).getContent();
+        setViews(events);
+        return events.stream()
                 .map(eventMapper::mapToFullDto)
                 .collect(Collectors.toList());
     }
@@ -211,7 +216,9 @@ public class EventServiceImpl implements EventService {
         } else {
             pageRequest = PageRequest.of(Math.toIntExact(from / size), Math.toIntExact(size));
         }
-        return eventRepository.findAll(expression, pageRequest).getContent().stream()
+        List<Event> events = eventRepository.findAll(expression, pageRequest).getContent();
+        setViews(events);
+        return events.stream()
                 .map(eventMapper::mapToShortDto)
                 .collect(Collectors.toList());
     }
@@ -255,5 +262,21 @@ public class EventServiceImpl implements EventService {
         }
         if (eventDto.getTitle() != null) updatedEvent.setTitle(eventDto.getTitle());
         return eventMapper.mapToFullDto(eventRepository.save(updatedEvent));
+    }
+
+    private void setViews(List<Event> events) {
+        LocalDateTime start = events.get(0).getCreatedOn();
+        List<String> uris = new ArrayList<>();
+        Map<String, Event> eventUri= new HashMap<>();
+        for (Event event : events) {
+            if (start.isBefore(event.getCreatedOn())) {
+                start = event.getCreatedOn();
+            }
+            String uri = "/events/" + event.getId();
+            uris.add(uri);
+            eventUri.put(uri, event);
+        }
+        List<ViewStats> statsView = statisticClient.getStatsView(start, LocalDateTime.now(), uris, false);
+        statsView.forEach((stat) -> eventUri.get(stat.getUri()).setViews(stat.getHits()));
     }
 }
