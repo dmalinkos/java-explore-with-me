@@ -10,6 +10,7 @@ import ru.practicum.ewm.mapper.CompilationMapper;
 import ru.practicum.ewm.model.Compilation;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.QCompilation;
+import ru.practicum.ewm.model.dto.CompilationDto;
 import ru.practicum.ewm.model.dto.NewCompilationDto;
 import ru.practicum.ewm.model.dto.UpdateCompilationDto;
 import ru.practicum.ewm.repository.CompilationRepository;
@@ -31,14 +32,16 @@ public class CompilationServiceImpl implements CompilationService {
     private final EventRepository eventRepository;
 
     @Override
-    public Compilation createCompilation(NewCompilationDto newCompilationDto) {
+    public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
         List<Event> events = new ArrayList<>(0);
         if (newCompilationDto.getEvents() != null) {
             events = StreamSupport.stream(eventRepository.findAllById(newCompilationDto.getEvents()).spliterator(), false)
                     .collect(Collectors.toList());
         }
         Set<Event> eventsSet = new HashSet<>(events);
-        return compilationRepository.save(compilationMapper.mapToCompilation(newCompilationDto, eventsSet));
+        return compilationMapper.mapToDto(
+                compilationRepository.save(
+                        compilationMapper.mapToCompilation(newCompilationDto, eventsSet)));
     }
 
     @Override
@@ -47,11 +50,12 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public Compilation updateCompilation(Long comId, UpdateCompilationDto updateCompilationDto) {
-        Compilation updatedCompilation = getCompilation(comId);
+    public CompilationDto updateCompilation(Long comId, UpdateCompilationDto updateCompilationDto) {
+        Compilation updatedCompilation = compilationMapper.mapToCompilation(getCompilation(comId));
         List<Event> events = new ArrayList<>(0);
         if (updateCompilationDto.getEvents() != null) {
-            events = StreamSupport.stream(eventRepository.findAllById(updateCompilationDto.getEvents()).spliterator(), false)
+            events = StreamSupport.stream(eventRepository.findAllById(
+                            updateCompilationDto.getEvents()).spliterator(), false)
                     .collect(Collectors.toList());
         }
         Set<Event> eventsSet = new HashSet<>(events);
@@ -65,23 +69,26 @@ public class CompilationServiceImpl implements CompilationService {
         if (updateCompilationDto.getEvents() != null) {
             updatedCompilation.setEvents(patchCompilation.getEvents());
         }
-        return compilationRepository.save(updatedCompilation);
+        return compilationMapper.mapToDto(compilationRepository.save(updatedCompilation));
     }
 
     @Override
-    public List<Compilation> getCompilations(boolean pinned, Long from, Long size) {
+    public List<CompilationDto> getCompilations(boolean pinned, Long from, Long size) {
         QCompilation qComp = QCompilation.compilation;
         PageRequest pageRequest = PageRequest.of(Math.toIntExact(from / size), Math.toIntExact(size));
         BooleanExpression expression = Expressions.asBoolean(true).eq(true);
         if (pinned) {
             expression = expression.and(qComp.pinned.eq(true));
         }
-        return compilationRepository.findAll(expression, pageRequest).getContent();
+        return compilationRepository.findAll(expression, pageRequest).getContent().stream()
+                .map(compilationMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Compilation getCompilation(Long comId) {
+    public CompilationDto getCompilation(Long comId) {
         return compilationRepository.findById(comId)
+                .map(compilationMapper::mapToDto)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Compilation with id=%d was not found", comId)));
     }

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.constants.Constants;
-import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.dto.AdminUpdateRequestEventDto;
 import ru.practicum.ewm.model.dto.EventFullDto;
 import ru.practicum.ewm.service.EventService;
@@ -13,7 +12,6 @@ import ru.practicum.ewm.service.EventService;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -21,7 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminEventController {
     private final EventService eventService;
-    private final EventMapper eventMapper;
 
     @GetMapping
     public List<EventFullDto> getEvents(@RequestParam(name = "users", required = false) List<Long> usersIds,
@@ -38,15 +35,13 @@ public class AdminEventController {
                         "rangeEnd: {}\n" +
                         "from: {}; size:{}",
                 usersIds, states, categoriesIds, rangeStart, rangeEnd, from, size);
-        return eventService.getEventsByAdmin(usersIds, states, categoriesIds, rangeStart, rangeEnd, from, size).stream()
-                .map(eventMapper::mapToFullDto)
-                .collect(Collectors.toList());
+        return eventService.getEventsByAdmin(usersIds, states, categoriesIds, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{id}")
     public EventFullDto updateEvent(@PathVariable(name = "id") Long eventId,
                                     @Valid @RequestBody AdminUpdateRequestEventDto eventPatchDto) {
         log.info("POST /admin/events/{} eventPatchDto: {}", eventId, eventPatchDto);
-        return eventMapper.mapToFullDto(eventService.updateEventByAdmin(eventId, eventPatchDto));
+        return eventService.updateEventByAdmin(eventId, eventPatchDto);
     }
 }

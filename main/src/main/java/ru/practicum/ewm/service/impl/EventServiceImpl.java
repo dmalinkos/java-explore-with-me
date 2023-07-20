@@ -12,14 +12,14 @@ import ru.practicum.ewm.client.StatisticClient;
 import ru.practicum.ewm.constants.Constants;
 import ru.practicum.ewm.dto.ViewStats;
 import ru.practicum.ewm.exception.*;
+import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.mapper.EventMapper;
+import ru.practicum.ewm.mapper.UserMapper;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.QEvent;
 import ru.practicum.ewm.model.User;
-import ru.practicum.ewm.model.dto.AdminUpdateRequestEventDto;
-import ru.practicum.ewm.model.dto.NewEventDto;
-import ru.practicum.ewm.model.dto.UserUpdateRequestEventDto;
+import ru.practicum.ewm.model.dto.*;
 import ru.practicum.ewm.model.enums.AdminStateAction;
 import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.model.enums.SortType;
@@ -32,23 +32,26 @@ import ru.practicum.ewm.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
     private final CategoryService categoryService;
     private final UserService userService;
+    private final UserMapper userMapper;
     private final EventRepository eventRepository;
     private final StatisticClient statisticClient;
     private final EventMapper eventMapper;
+    private final CategoryMapper categoryMapper;
 
     @Override
-    public Event createEvent(Long initiatorId, NewEventDto newEventDto) {
+    public EventFullDto createEvent(Long initiatorId, NewEventDto newEventDto) {
         if (newEventDto.getEventDate().minusHours(2).isBefore(LocalDateTime.now())) {
             throw new BadTimeException("Еhe date and time for which the event is scheduled cannot be earlier than two hours from the current moment");
         }
-        Category category = categoryService.getCategory(newEventDto.getCategory());
-        User initiator = userService.getUser(initiatorId);
+        Category category = categoryMapper.mapToCategory(categoryService.getCategory(newEventDto.getCategory()));
+        User initiator = userMapper.mapToUser(userService.getUser(initiatorId));
         Event event = eventMapper.mapToCreateEvent(newEventDto);
         event.setCategory(category);
         event.setInitiator(initiator);
@@ -56,17 +59,19 @@ public class EventServiceImpl implements EventService {
         event.setCreatedOn(LocalDateTime.now());
         event.setState(EventState.PENDING);
         event.setViews(0L);
-        return eventRepository.save(event);
+        return eventMapper.mapToFullDto(eventRepository.save(event));
     }
 
     @Override
-    public Event getEventById(Long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%d is not exist", eventId)));
+    public EventFullDto getEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .map(eventMapper::mapToFullDto)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%d is not exist", eventId)));
     }
 
     @SneakyThrows
     @Override
-    public Event getPublicEventById(Long eventId, HttpServletRequest request) {
+    public EventFullDto getPublicEventById(Long eventId, HttpServletRequest request) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%d is not exist", eventId)));
         if (event.getPublishedOn() == null) {
             throw new EventAccessException(String.format("Event with id=%d not yet PUBLISHED", eventId));
@@ -78,29 +83,37 @@ public class EventServiceImpl implements EventService {
                 List.of(request.getRequestURI()),
                 true);
         event.setViews(stats.get(0).getHits());
-        return event;
+        return eventMapper.mapToFullDto(event);
     }
 
     @Override
-    public List<Event> getCurrentUserEvents(Long userId, Long from, Long size) {
+    public List<EventShortDto> getCurrentUserEvents(Long userId, Long from, Long size) {
         Pageable page = PageRequest.of(Math.toIntExact(from / size), Math.toIntExact(size));
-        return eventRepository.findByInitiatorId(userId, page);
+        return eventRepository.findByInitiatorId(userId, page).stream()
+                .map(eventMapper::mapToShortDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Event getCurrentUserEvent(Long userId, Long eventId) {
-        return eventRepository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() -> new EntityNotFoundException(String.format("Event with id=%d and initiator with id=%d is not exist", eventId, userId)));
+    public EventFullDto getCurrentUserEvent(Long userId, Long eventId) {
+        return eventRepository.findByIdAndInitiatorId(eventId, userId)
+                .map(eventMapper::mapToFullDto)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Event with id=%d and initiator with id=%d is not exist", eventId, userId))
+                );
     }
 
     @Override
-    public Event updateCurrentUserEvent(Long userId, Long eventId, UserUpdateRequestEventDto eventDto) {
-        Event updatedEvent = getCurrentUserEvent(userId, eventId);
+    public EventFullDto updateCurrentUserEvent(Long userId, Long eventId, UserUpdateRequestEventDto eventDto) {
+        Event updatedEvent = eventMapper.mapToEvent(getCurrentUserEvent(userId, eventId));
         if (updatedEvent.getPublishedOn() != null) {
             throw new EventAlreadyPublishedException(String.format("Cannot update event with id=%d because it's not in the right state: PUBLISHED", eventId));
         }
         if (eventDto.getAnnotation() != null) updatedEvent.setAnnotation(eventDto.getAnnotation());
         if (eventDto.getCategory() != null)
-            updatedEvent.setCategory(categoryService.getCategory(eventDto.getCategory()));
+            updatedEvent.setCategory(
+                    categoryMapper.mapToCategory(
+                            categoryService.getCategory(eventDto.getCategory())));
         if (eventDto.getDescription() != null) updatedEvent.setDescription(eventDto.getDescription());
         if (eventDto.getEventDate() != null) {
             if (eventDto.getEventDate().minusHours(2).isBefore(LocalDateTime.now())) {
@@ -120,11 +133,11 @@ public class EventServiceImpl implements EventService {
             }
         }
         if (eventDto.getTitle() != null) updatedEvent.setTitle(eventDto.getTitle());
-        return updatedEvent;
+        return eventMapper.mapToFullDto(updatedEvent);
     }
 
     @Override
-    public List<Event> getEventsByAdmin(List<Long> usersIds, List<String> states, List<Long> categoriesIds, LocalDateTime rangeStart, LocalDateTime rangeEnd, Long from, Long size) {
+    public List<EventFullDto> getEventsByAdmin(List<Long> usersIds, List<String> states, List<Long> categoriesIds, LocalDateTime rangeStart, LocalDateTime rangeEnd, Long from, Long size) {
         QEvent qEvent = QEvent.event;
         BooleanExpression expression = Expressions.asBoolean(true).eq(true);
         if (usersIds != null) {
@@ -143,13 +156,15 @@ public class EventServiceImpl implements EventService {
             expression = expression.and(qEvent.eventDate.before(rangeEnd));
         }
         PageRequest pageRequest = PageRequest.of(Math.toIntExact(from / size), Math.toIntExact(size));
-        return eventRepository.findAll(expression, pageRequest).getContent();
+        return eventRepository.findAll(expression, pageRequest).getContent().stream()
+                .map(eventMapper::mapToFullDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Event> getEventsByPublic(String text, List<Long> categoriesIds, Boolean paid, LocalDateTime rangeStart,
-                                         LocalDateTime rangeEnd, Boolean onlyAvailable, SortType sortType,
-                                         Long from, Long size, HttpServletRequest request) {
+    public List<EventShortDto> getEventsByPublic(String text, List<Long> categoriesIds, Boolean paid, LocalDateTime rangeStart,
+                                                 LocalDateTime rangeEnd, Boolean onlyAvailable, SortType sortType,
+                                                 Long from, Long size, HttpServletRequest request) {
         statisticClient.addEndpointHit("ewm-main-service", request);
         QEvent qEvent = QEvent.event;
         BooleanExpression expression = Expressions.asBoolean(true).eq(true);
@@ -196,16 +211,20 @@ public class EventServiceImpl implements EventService {
         } else {
             pageRequest = PageRequest.of(Math.toIntExact(from / size), Math.toIntExact(size));
         }
-        return eventRepository.findAll(expression, pageRequest).getContent();
+        return eventRepository.findAll(expression, pageRequest).getContent().stream()
+                .map(eventMapper::mapToShortDto)
+                .collect(Collectors.toList());
     }
 
     @SneakyThrows
     @Override
-    public Event updateEventByAdmin(Long eventId, AdminUpdateRequestEventDto eventDto) {
-        Event updatedEvent = getEventById(eventId);
+    public EventFullDto updateEventByAdmin(Long eventId, AdminUpdateRequestEventDto eventDto) {
+        Event updatedEvent = eventMapper.mapToEvent(getEventById(eventId));
         if (eventDto.getAnnotation() != null) updatedEvent.setAnnotation(eventDto.getAnnotation());
         if (eventDto.getCategory() != null)
-            updatedEvent.setCategory(categoryService.getCategory(eventDto.getCategory()));
+            updatedEvent.setCategory(
+                    categoryMapper.mapToCategory(
+                            categoryService.getCategory(eventDto.getCategory())));
         if (eventDto.getDescription() != null) updatedEvent.setDescription(eventDto.getDescription());
         if (eventDto.getEventDate() != null) {
             if (eventDto.getEventDate().minusHours(2).isBefore(LocalDateTime.now())) {
@@ -235,6 +254,6 @@ public class EventServiceImpl implements EventService {
             }
         }
         if (eventDto.getTitle() != null) updatedEvent.setTitle(eventDto.getTitle());
-        return eventRepository.save(updatedEvent);
+        return eventMapper.mapToFullDto(eventRepository.save(updatedEvent));
     }
 }

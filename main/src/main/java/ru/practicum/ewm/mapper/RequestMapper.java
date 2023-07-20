@@ -17,8 +17,14 @@ public abstract class RequestMapper {
     @Autowired
     protected UserService userService;
 
-    @Mapping(target = "event", expression = "java(eventService.getEventById(requestDto.getEvent()))")
-    @Mapping(target = "requester", expression = "java(userService.getUser(requestDto.getRequester()))")
+    @Autowired
+    protected EventMapper eventMapper;
+
+    @Autowired
+    protected UserMapper userMapper;
+
+    @Mapping(target = "event", expression = "java(eventMapper.mapToEvent(eventService.getEventById(requestDto.getEvent())))")
+    @Mapping(target = "requester", expression = "java(userMapper.mapToUser(userService.getUser(requestDto.getRequester())))")
     public abstract Request mapToRequest(RequestDto requestDto);
 
     @Mapping(target = "event", source = "event.id")

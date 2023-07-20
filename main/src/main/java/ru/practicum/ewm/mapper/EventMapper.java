@@ -14,6 +14,8 @@ public interface EventMapper {
 
     EventShortDto mapToShortDto(Event event);
 
+    Event mapToEvent(EventFullDto eventFullDto);
+
     @Mapping(target = "views", ignore = true)
     @Mapping(target = "state", ignore = true)
     @Mapping(target = "publishedOn", ignore = true)

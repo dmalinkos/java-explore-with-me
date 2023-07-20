@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.exception.EntityNotFoundException;
+import ru.practicum.ewm.mapper.UserMapper;
 import ru.practicum.ewm.model.User;
+import ru.practicum.ewm.model.dto.UserDto;
 import ru.practicum.ewm.repository.UserRepository;
 import ru.practicum.ewm.service.UserService;
 
@@ -16,10 +18,12 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
-    public User addUser(User user) {
-        return userRepository.save(user);
+    public UserDto addUser(UserDto userDto) {
+        User user = userMapper.mapToUser(userDto);
+        return userMapper.mapToUserDto(userRepository.save(user));
     }
 
     @Override
@@ -28,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsers(List<Long> ids, Long from, Long size) {
+    public List<UserDto> getUsers(List<Long> ids, Long from, Long size) {
         Iterable<User> users;
         if (ids != null) {
             users = userRepository.findAllById(ids);
@@ -38,11 +42,14 @@ public class UserServiceImpl implements UserService {
             users = userRepository.findAll(page);
         }
         return StreamSupport.stream(users.spliterator(), false)
+                .map(userMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public User getUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException(String.format("User with id=%d is not exist", userId)));
+    public UserDto getUser(Long userId) {
+        return userRepository.findById(userId)
+                .map(userMapper::mapToUserDto)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id=%d is not exist", userId)));
     }
 }

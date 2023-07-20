@@ -30,4 +30,6 @@ public abstract class CompilationMapper {
 
     @Mapping(target = "events", expression = "java(compilation.getEvents().stream().map(eventMapper::mapToShortDto).collect(java.util.stream.Collectors.toSet()))")
     public abstract CompilationDto mapToDto(Compilation compilation);
+
+    public abstract Compilation mapToCompilation(CompilationDto compilationDto);
 }

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.constants.Constants;
-import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.dto.EventFullDto;
 import ru.practicum.ewm.model.dto.EventShortDto;
 import ru.practicum.ewm.model.enums.SortType;
@@ -14,7 +13,6 @@ import ru.practicum.ewm.service.EventService;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -22,7 +20,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PublicEventController {
     private final EventService eventService;
-    private final EventMapper eventMapper;
 
     @GetMapping
     public List<EventShortDto> getEvents(@RequestParam(name = "text", required = false) String text,
@@ -44,15 +41,13 @@ public class PublicEventController {
                         "sort: {}\n" +
                         "from: {}; size:{}",
                 text, categoriesIds, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-        return eventService.getEventsByPublic(text, categoriesIds, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request).stream()
-                .map(eventMapper::mapToShortDto)
-                .collect(Collectors.toList());
+        return eventService.getEventsByPublic(text, categoriesIds, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
     @GetMapping("/{id}")
     public EventFullDto getEvent(@PathVariable(name = "id") Long eventId,
                                  HttpServletRequest request) {
         log.info("GET /events/{} ", eventId);
-        return eventMapper.mapToFullDto(eventService.getPublicEventById(eventId, request));
+        return eventService.getPublicEventById(eventId, request);
     }
 }
