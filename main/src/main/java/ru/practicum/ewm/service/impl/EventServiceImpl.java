@@ -267,7 +267,7 @@ public class EventServiceImpl implements EventService {
     private void setViews(List<Event> events) {
         LocalDateTime start = events.get(0).getCreatedOn();
         List<String> uris = new ArrayList<>();
-        Map<String, Event> eventUri= new HashMap<>();
+        Map<String, Event> eventUri = new HashMap<>();
         for (Event event : events) {
             if (start.isBefore(event.getCreatedOn())) {
                 start = event.getCreatedOn();
