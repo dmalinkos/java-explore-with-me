@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.model.dto.RequestDto;
 import ru.practicum.ewm.service.RequestService;
 
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -18,19 +19,19 @@ public class PrivateRequestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RequestDto createRequest(@PathVariable Long userId,
+    public RequestDto createRequest(@PathVariable @PositiveOrZero Long userId,
                                     @RequestParam(name = "eventId") Long eventId) {
         return requestService.createRequest(userId, eventId);
     }
 
     @GetMapping
-    public List<RequestDto> getUserRequests(@PathVariable Long userId) {
+    public List<RequestDto> getUserRequests(@PathVariable @PositiveOrZero Long userId) {
         return requestService.getUserRequests(userId);
     }
 
     @PatchMapping("/{requestId}/cancel")
-    public RequestDto cancelRequest(@PathVariable Long userId,
-                                    @PathVariable Long requestId) {
+    public RequestDto cancelRequest(@PathVariable @PositiveOrZero Long userId,
+                                    @PathVariable @PositiveOrZero Long requestId) {
         return requestService.cancelRequest(userId, requestId);
     }
 }

@@ -52,6 +52,16 @@ public class RequestServiceImpl implements RequestService {
         if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
             throw new MaximumEventConfirmedRequests(String.format("Event with id=%d have max confirmed requests", eventId));
         }
+        RequestStatus status = chooseRequestStatusBasedOnEvent(event);
+        Request request = Request.builder()
+                .event(event)
+                .requester(requester)
+                .status(status)
+                .build();
+        return requestMapper.mapToDto(requestRepository.save(request));
+    }
+
+    private RequestStatus chooseRequestStatusBasedOnEvent(Event event) {
         RequestStatus status;
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             if (event.getParticipantLimit() == 0 || event.getConfirmedRequests() < event.getParticipantLimit()) {
@@ -64,12 +74,7 @@ public class RequestServiceImpl implements RequestService {
         } else {
             status = RequestStatus.PENDING;
         }
-        Request request = Request.builder()
-                .event(event)
-                .requester(requester)
-                .status(status)
-                .build();
-        return requestMapper.mapToDto(requestRepository.save(request));
+        return status;
     }
 
     @Override

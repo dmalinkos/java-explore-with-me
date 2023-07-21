@@ -8,6 +8,7 @@ import ru.practicum.ewm.model.dto.UserDto;
 import ru.practicum.ewm.service.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -26,15 +27,15 @@ public class AdminUserController {
 
     @GetMapping
     public List<UserDto> getUsers(@RequestParam(name = "ids", required = false) List<Long> ids,
-                                  @RequestParam(name = "from", defaultValue = "0") Long from,
-                                  @RequestParam(name = "size", defaultValue = "10") Long size) {
+                                  @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Long from,
+                                  @RequestParam(name = "size", defaultValue = "10") @PositiveOrZero Long size) {
         log.info("GET /admin/users ids: {}, from: {}, size = {}", ids, from, size);
         return userService.getUsers(ids, from, size);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long userId) {
+    public void deleteUser(@PathVariable @PositiveOrZero Long userId) {
         log.info("DELETE /admin/users/{}", userId);
         userService.deleteUser(userId);
     }

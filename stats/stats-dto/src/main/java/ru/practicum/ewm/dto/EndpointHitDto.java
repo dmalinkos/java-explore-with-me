@@ -22,8 +22,6 @@ public class EndpointHitDto {
     @Pattern(regexp = "^/\\w+(/\\d+)*", message = "'uri' incorrect input")
     @NotBlank(message = "'uri' can't be null or blank")
     private String uri;
-//    @Pattern(regexp = "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.)" +
-//            "{3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$", message = "'ip' incorrect input")
     @NotNull(message = "'ip' can't be null")
     private String ip;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

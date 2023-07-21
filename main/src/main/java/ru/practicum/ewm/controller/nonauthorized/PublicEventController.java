@@ -11,6 +11,8 @@ import ru.practicum.ewm.model.enums.SortType;
 import ru.practicum.ewm.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,8 +31,8 @@ public class PublicEventController {
                                          @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT) LocalDateTime rangeEnd,
                                          @RequestParam(name = "onlyAvailable", defaultValue = "false", required = false) Boolean onlyAvailable,
                                          @RequestParam(name = "sort", required = false) SortType sort,
-                                         @RequestParam(name = "from", defaultValue = "0", required = false) Long from,
-                                         @RequestParam(name = "size", defaultValue = "10", required = false) Long size,
+                                         @RequestParam(name = "from", defaultValue = "0", required = false) @PositiveOrZero Long from,
+                                         @RequestParam(name = "size", defaultValue = "10", required = false) @Positive Long size,
                                          HttpServletRequest request) {
         log.info("GET /events text: {}\n" +
                         "categories: {}\n" +
@@ -45,7 +47,7 @@ public class PublicEventController {
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getEvent(@PathVariable(name = "id") Long eventId,
+    public EventFullDto getEvent(@PathVariable(name = "id") @PositiveOrZero Long eventId,
                                  HttpServletRequest request) {
         log.info("GET /events/{} ", eventId);
         return eventService.getPublicEventById(eventId, request);

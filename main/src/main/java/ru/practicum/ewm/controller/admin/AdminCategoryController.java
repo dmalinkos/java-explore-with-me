@@ -8,6 +8,7 @@ import ru.practicum.ewm.model.dto.CategoryDto;
 import ru.practicum.ewm.service.CategoryService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
 
 @Slf4j
 @RestController
@@ -25,14 +26,14 @@ public class AdminCategoryController {
 
     @DeleteMapping("/{catId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable Long catId) {
+    public void deleteCategory(@PathVariable @PositiveOrZero Long catId) {
         log.info("DELETE /admin/categories/{catId} catId: {}", catId);
         categoryService.deleteCategory(catId);
     }
 
     @PatchMapping("/{catId}")
     public CategoryDto patchCategory(@Valid @RequestBody CategoryDto categoryDto,
-                                     @PathVariable Long catId) {
+                                     @PathVariable @PositiveOrZero Long catId) {
         log.info("PATCH /admin/categories/{catId} categoryDto: {}, catId: {}", categoryDto, catId);
         return categoryService.patchCategory(categoryDto, catId);
     }

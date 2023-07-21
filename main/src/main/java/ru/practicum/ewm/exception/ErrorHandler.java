@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
@@ -24,10 +21,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorApi handleException(Exception exception) {
         log.error("ERROR: ", exception);
-        StringWriter out = new StringWriter();
-        exception.printStackTrace(new PrintWriter(out));
-        String stackTrace = out.toString();
-        return new ErrorApi(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage(), stackTrace);
+        return new ErrorApi(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage(), exception.getClass().toString());
     }
 
     @ExceptionHandler(value = {

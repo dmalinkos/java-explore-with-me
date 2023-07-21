@@ -10,6 +10,8 @@ import ru.practicum.ewm.model.dto.EventFullDto;
 import ru.practicum.ewm.service.EventService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,8 +28,8 @@ public class AdminEventController {
                                         @RequestParam(name = "categories", required = false) List<Long> categoriesIds,
                                         @RequestParam(name = "rangeStart", required = false) @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT) LocalDateTime rangeStart,
                                         @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT) LocalDateTime rangeEnd,
-                                        @RequestParam(name = "from", defaultValue = "0", required = false) Long from,
-                                        @RequestParam(name = "size", defaultValue = "10", required = false) Long size) {
+                                        @RequestParam(name = "from", defaultValue = "0", required = false) @PositiveOrZero Long from,
+                                        @RequestParam(name = "size", defaultValue = "10", required = false) @Positive Long size) {
         log.info("GET /admin/events users: {}\n" +
                         "states: {}\n" +
                         "categories: {}\n" +
@@ -39,7 +41,7 @@ public class AdminEventController {
     }
 
     @PatchMapping("/{id}")
-    public EventFullDto updateEvent(@PathVariable(name = "id") Long eventId,
+    public EventFullDto updateEvent(@PathVariable(name = "id") @PositiveOrZero Long eventId,
                                     @Valid @RequestBody AdminUpdateRequestEventDto eventPatchDto) {
         log.info("POST /admin/events/{} eventPatchDto: {}", eventId, eventPatchDto);
         return eventService.updateEventByAdmin(eventId, eventPatchDto);

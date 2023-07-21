@@ -10,6 +10,7 @@ import ru.practicum.ewm.model.dto.UpdateCompilationDto;
 import ru.practicum.ewm.service.CompilationService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @Slf4j
@@ -27,13 +28,13 @@ public class AdminCompilationController {
 
     @DeleteMapping("/{comId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCompilation(@PathVariable(name = "comId") Long comId) {
+    public void deleteCompilation(@PathVariable(name = "comId") @PositiveOrZero Long comId) {
         log.info("DELETE /admin/compilations/{} ", comId);
         compilationService.deleteCompilation(comId);
     }
 
     @PatchMapping("/{comId}")
-    public CompilationDto updateCompilation(@PathVariable(name = "comId") Long comId,
+    public CompilationDto updateCompilation(@PathVariable(name = "comId") @PositiveOrZero Long comId,
                                             @Valid @RequestBody UpdateCompilationDto compilationDto) {
         log.info("POST /admin/compilations/{} compilationDto: {}", comId, compilationDto);
         return compilationService.updateCompilation(comId, compilationDto);
