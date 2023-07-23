@@ -8,19 +8,22 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "locations", schema = "public")
+@Table(name = "place_locations", schema = "public")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Location {
+public class PlaceLocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     private Float lat;
 
     private Float lon;
 
+    private Float radius;
 }
