@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.dto.EventFullDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +16,9 @@ public interface EventRepository extends CrudRepository<Event, Long>, QuerydslPr
 
     boolean existsByCategoryId(Long catId);
 
-    @Query(nativeQuery = true, value =
-            "SELECT e " +
-            "FROM events e " +
-            "JOIN locations l on l.id = e.location_id " +
-            "WHERE distance(l.lat, l.lon, :lat, :lon) <= :radius ")
-    List<EventFullDto> getEventsInRadius(Float lat, Float lon, Float radius);
+    @Query("SELECT e " +
+            "FROM Event e " +
+            "WHERE distance(e.lat, e.lon, :lat, :lon) <= :radius ")
+    List<Event> getEventsInRadius(Float lat, Float lon, Float radius);
 
 }

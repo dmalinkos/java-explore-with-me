@@ -124,7 +124,10 @@ public class EventServiceImpl implements EventService {
             }
             updatedEvent.setEventDate(eventDto.getEventDate());
         }
-        if (eventDto.getLocation() != null) updatedEvent.setLocation(eventDto.getLocation());
+        if (eventDto.getLocation() != null) {
+            updatedEvent.setLat(eventDto.getLocation().getLat());
+            updatedEvent.setLon(eventDto.getLocation().getLon());
+        }
         if (eventDto.getPaid() != null) updatedEvent.setPaid(eventDto.getPaid());
         if (eventDto.getParticipantLimit() != null) updatedEvent.setParticipantLimit(eventDto.getParticipantLimit());
         if (eventDto.getRequestModeration() != null) updatedEvent.setRequestModeration(eventDto.getRequestModeration());
@@ -239,7 +242,10 @@ public class EventServiceImpl implements EventService {
             }
             updatedEvent.setEventDate(eventDto.getEventDate());
         }
-        if (eventDto.getLocation() != null) updatedEvent.setLocation(eventDto.getLocation());
+        if (eventDto.getLocation() != null) {
+            updatedEvent.setLat(eventDto.getLocation().getLat());
+            updatedEvent.setLon(eventDto.getLocation().getLon());
+        }
         if (eventDto.getPaid() != null) updatedEvent.setPaid(eventDto.getPaid());
         if (eventDto.getParticipantLimit() != null) updatedEvent.setParticipantLimit(eventDto.getParticipantLimit());
         if (eventDto.getRequestModeration() != null) updatedEvent.setRequestModeration(eventDto.getRequestModeration());

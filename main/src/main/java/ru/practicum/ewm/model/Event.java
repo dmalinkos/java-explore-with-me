@@ -37,9 +37,12 @@ public class Event {
     @JoinColumn(name = "initiator_id", referencedColumnName = "id")
     private User initiator;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id", referencedColumnName = "id")
-    private Location location;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "location_id", referencedColumnName = "id")
+//    private Location location;
+    private Float lat;
+
+    private Float lon;
 
     private Boolean paid;
 

@@ -1,0 +1,761 @@
+{
+	"info": {
+		"_postman_id": "f5b002ad-6fab-4d02-b1c6-70c52bdff5fa",
+		"name": "feature",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26531759"
+	},
+	"item": [
+		{
+			"name": "Добавление Москвы",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.have.status(201);\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Место должно содержать поля: id, name, lat, lon, radius\", function () {\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('name');\r",
+							"    pm.expect(target).to.have.property('lat');\r",
+							"    pm.expect(target).to.have.property('lon');\r",
+							"    pm.expect(target).to.have.property('radius');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(1).equal(target.id, 'Идентификатор места должен быть равным 1');\r",
+							"    pm.expect('Москва').equal(target.name, 'Название места должно соответствовать названию места с указанным идентификатором');\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Москва\",\r\n    \"lat\": 55.755919,\r\n    \"lon\": 37.617589,\r\n    \"radius\": 28\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/locations",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение Москвы",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Место должно содержать поля: id, name, lat, lon, radius\", function () {\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('name');\r",
+							"    pm.expect(target).to.have.property('lat');\r",
+							"    pm.expect(target).to.have.property('lon');\r",
+							"    pm.expect(target).to.have.property('radius');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(1).equal(target.id, 'Идентификатор места должен быть равным 1');\r",
+							"    pm.expect('Москва').equal(target.name, 'Название места должно соответствовать названию места с указанным идентификатором');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/locations/:locId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"locations",
+						":locId"
+					],
+					"variable": [
+						{
+							"key": "locId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление Санкт-Петербурга",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.have.status(201);;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Место должно содержать поля: id, name, lat, lon, radius\", function () {\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('name');\r",
+							"    pm.expect(target).to.have.property('lat');\r",
+							"    pm.expect(target).to.have.property('lon');\r",
+							"    pm.expect(target).to.have.property('radius');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(2).equal(target.id, 'Идентификатор места должен быть равным 1');\r",
+							"    pm.expect('Санкт-Петербург').equal(target.name, 'Название места должно соответствовать названию места с указанным идентификатором');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Санкт-Петербург\",\r\n    \"lat\": 59.93863,\r\n    \"lon\": 30.31413,\r\n    \"radius\": 25\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/locations",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление Бебры",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.have.status(201);;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Место должно содержать поля: id, name, lat, lon, radius\", function () {\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('name');\r",
+							"    pm.expect(target).to.have.property('lat');\r",
+							"    pm.expect(target).to.have.property('lon');\r",
+							"    pm.expect(target).to.have.property('radius');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(3).equal(target.id, 'Идентификатор места должен быть равным 1');\r",
+							"    pm.expect('Бебра').equal(target.name, 'Название места должно соответствовать названию места с указанным идентификатором');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Бебра\",\r\n    \"lat\": 50.97445,\r\n    \"lon\": 9.7956200,\r\n    \"radius\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/locations",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение всех мест",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"var target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Место должно содержать поля: id, name, lat, lon, radius\", function () {\r",
+							"    pm.expect(target[0]).to.have.property('id');\r",
+							"    pm.expect(target[0]).to.have.property('name');\r",
+							"    pm.expect(target[0]).to.have.property('lat');\r",
+							"    pm.expect(target[0]).to.have.property('lon');\r",
+							"    pm.expect(target[0]).to.have.property('radius');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(target.length, 'List length must be 3').to.eql(3);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/locations",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удаление Бебры",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 204\", function () {\r",
+							"    pm.response.to.be.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/admin/locations/:locId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"locations",
+						":locId"
+					],
+					"variable": [
+						{
+							"key": "locId",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Попытка получения Бебры после удаления",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 404\", function () {\r",
+							"    pm.response.to.be.have.status(404);\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Ответ должен содержать поля: status, reason, message, timestamp\", function () {\r",
+							"    pm.expect(target).to.have.property('status');\r",
+							"    pm.expect(target).to.have.property('reason');\r",
+							"    pm.expect(target).to.have.property('message');\r",
+							"    pm.expect(target).to.have.property('timestamp');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ответ должен соответствовать данным в запросе\", function () {\r",
+							"    pm.expect('NOT FOUND').equal(target.status, 'Статус ответа должен быть NOT FOUND');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/locations/:locId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"locations",
+						":locId"
+					],
+					"variable": [
+						{
+							"key": "locId",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Переименование Санкт-Петербурга в Ленинград",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Место должно содержать поля: id, name, lat, lon, radius\", function () {\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('name');\r",
+							"    pm.expect(target).to.have.property('lat');\r",
+							"    pm.expect(target).to.have.property('lon');\r",
+							"    pm.expect(target).to.have.property('radius');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(2).equal(target.id, 'Идентификатор места должен быть равным 1');\r",
+							"    pm.expect('Ленинград').equal(target.name, 'Название места должно соответствовать названию места с указанным идентификатором');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Ленинград\",\r\n    \"lat\": 59.93863,\r\n    \"lon\": 30.31413,\r\n    \"radius\": 25\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/locations/:locId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"locations",
+						":locId"
+					],
+					"variable": [
+						{
+							"key": "locId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.have.status(201);;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Иван Пупкин\",\r\n    \"email\": \"ivapupa@mail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление категории",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.have.status(201);;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Собеседование\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/categories",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление события в Москве",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.have.status(201);;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"annotation\": \"Собесодование в Москве\",\r\n    \"category\": 1,\r\n    \"description\": \"Собесодование в крупную международную компанию на управляющую должность\",\r\n    \"eventDate\": \"2023-07-25 14:00:00\",\r\n    \"location\": {\r\n        \"lat\": 55.755919,\r\n        \"lon\": 37.617589\r\n    },\r\n    \"paid\": \"false\",\r\n    \"participantLimit\": \"1\",\r\n    \"requestModeration\": \"true\",\r\n    \"title\": \"Собеседование\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/1/events",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"1",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление события в Питере",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.have.status(201);;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"annotation\": \"Собесодование в Питере\",\r\n    \"category\": 1,\r\n    \"description\": \"Собесодование в крупную международную компанию на управляющую должность\",\r\n    \"eventDate\": \"2023-07-26 14:00:00\",\r\n    \"location\": {\r\n        \"lat\": 59.93863,\r\n        \"lon\": 30.31413\r\n    },\r\n    \"paid\": \"false\",\r\n    \"participantLimit\": \"1\",\r\n    \"requestModeration\": \"true\",\r\n    \"title\": \"Собеседование\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/1/events",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"1",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение событий в Москве",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"var target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Список мероприятий должен быть длиной 1\", function () {\r",
+							"    pm.expect(target.length, 'List length must be 1').to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/locations/events/:locId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"locations",
+						"events",
+						":locId"
+					],
+					"variable": [
+						{
+							"key": "locId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение событий по координатам",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"var target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Список мероприятий должен быть длиной 1\", function () {\r",
+							"    pm.expect(target.length, 'List length must be 1').to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/locations/events?lat=55.77&lon=37.60&radius=10",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"locations",
+						"events"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "55.77"
+						},
+						{
+							"key": "lon",
+							"value": "37.60"
+						},
+						{
+							"key": "radius",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение событий в Питере",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"var target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Список мероприятий должен быть длиной 1\", function () {\r",
+							"    pm.expect(target.length, 'List length must be 1').to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/locations/events/:locId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"locations",
+						"events",
+						":locId"
+					],
+					"variable": [
+						{
+							"key": "locId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "locId",
+			"value": "1"
+		}
+	]
+}

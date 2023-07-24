@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import ru.practicum.ewm.constants.Constants;
-import ru.practicum.ewm.model.Location;
 import ru.practicum.ewm.model.enums.AdminStateAction;
 
 import javax.validation.constraints.Size;
@@ -23,7 +22,7 @@ public class AdminUpdateRequestEventDto {
     String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_FORMAT)
     LocalDateTime eventDate;
-    Location location;
+    LocationDto location;
     Boolean paid;
     Integer participantLimit;
     Boolean requestModeration;
