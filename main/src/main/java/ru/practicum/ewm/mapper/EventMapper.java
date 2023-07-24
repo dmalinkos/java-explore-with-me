@@ -10,18 +10,12 @@ import ru.practicum.ewm.model.dto.EventFullDto;
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
-    @Mapping(source = "lat", target = "location.lat")
-    @Mapping(source = "lon", target = "location.lon")
     EventFullDto mapToFullDto(Event event);
 
     EventShortDto mapToShortDto(Event event);
 
-    @Mapping(target = "lat", source = "location.lat")
-    @Mapping(target = "lon", source = "location.lon")
     Event mapToEvent(EventFullDto eventFullDto);
 
-    @Mapping(target = "lat", source = "location.lat")
-    @Mapping(target = "lon", source = "location.lon")
     @Mapping(target = "views", ignore = true)
     @Mapping(target = "state", ignore = true)
     @Mapping(target = "publishedOn", ignore = true)

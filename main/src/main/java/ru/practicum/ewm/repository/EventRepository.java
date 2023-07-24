@@ -18,7 +18,8 @@ public interface EventRepository extends CrudRepository<Event, Long>, QuerydslPr
 
     @Query("SELECT e " +
             "FROM Event e " +
-            "WHERE distance(e.lat, e.lon, :lat, :lon) <= :radius ")
+            "JOIN e.location l " +
+            "WHERE distance(l.lat, l.lon, :lat, :lon) <= :radius ")
     List<Event> getEventsInRadius(Float lat, Float lon, Float radius);
 
 }

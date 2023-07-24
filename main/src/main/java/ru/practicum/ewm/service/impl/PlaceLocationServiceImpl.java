@@ -12,6 +12,7 @@ import ru.practicum.ewm.repository.PlaceLocationRepository;
 import ru.practicum.ewm.service.PlaceLocationService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -33,18 +34,10 @@ public class PlaceLocationServiceImpl implements PlaceLocationService {
                 () -> new EntityNotFoundException(String.format("Location with id=%d is not exist", locId)
                 )
         );
-        if (placeLocationUpdateDto.getName() != null) {
-            placeLocation.setName(placeLocationUpdateDto.getName());
-        }
-        if (placeLocationUpdateDto.getLon() != null) {
-            placeLocation.setLon(placeLocationUpdateDto.getLon());
-        }
-        if (placeLocationUpdateDto.getLat() != null) {
-            placeLocation.setLat(placeLocationUpdateDto.getLat());
-        }
-        if (placeLocationUpdateDto.getRadius() != null) {
-            placeLocation.setRadius(placeLocationUpdateDto.getRadius());
-        }
+        Optional.ofNullable(placeLocationUpdateDto.getName()).ifPresent(placeLocation::setName);
+        Optional.ofNullable(placeLocationUpdateDto.getLon()).ifPresent(placeLocation::setLon);
+        Optional.ofNullable(placeLocationUpdateDto.getLat()).ifPresent(placeLocation::setLat);
+        Optional.ofNullable(placeLocationUpdateDto.getRadius()).ifPresent(placeLocation::setRadius);
         return placeLocationMapper.mapToDto(placeLocationRepository.save(placeLocation));
     }
 

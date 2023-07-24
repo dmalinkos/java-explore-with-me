@@ -2,6 +2,7 @@ package ru.practicum.ewm.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import ru.practicum.ewm.model.Location;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ public class NewEventDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
     @NotNull
-    LocationDto location;
+    Location location;
     Boolean paid = false;
     Long participantLimit;
     Boolean requestModeration = true;

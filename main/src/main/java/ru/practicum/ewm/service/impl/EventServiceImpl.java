@@ -31,10 +31,7 @@ import ru.practicum.ewm.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,42 +101,6 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Event with id=%d and initiator with id=%d is not exist", eventId, userId))
                 );
-    }
-
-    @Override
-    public EventFullDto updateCurrentUserEvent(Long userId, Long eventId, UserUpdateRequestEventDto eventDto) {
-        Event updatedEvent = eventMapper.mapToEvent(getCurrentUserEvent(userId, eventId));
-        if (updatedEvent.getPublishedOn() != null) {
-            throw new EventAlreadyPublishedException(String.format("Cannot update event with id=%d because it's not in the right state: PUBLISHED", eventId));
-        }
-        if (eventDto.getAnnotation() != null) updatedEvent.setAnnotation(eventDto.getAnnotation());
-        if (eventDto.getCategory() != null)
-            updatedEvent.setCategory(
-                    categoryMapper.mapToCategory(
-                            categoryService.getCategory(eventDto.getCategory())));
-        if (eventDto.getDescription() != null) updatedEvent.setDescription(eventDto.getDescription());
-        if (eventDto.getEventDate() != null) {
-            if (eventDto.getEventDate().minusHours(2).isBefore(LocalDateTime.now())) {
-                throw new BadTimeException("Еhe date and time for which the event is scheduled cannot be earlier than two hours from the current moment");
-            }
-            updatedEvent.setEventDate(eventDto.getEventDate());
-        }
-        if (eventDto.getLocation() != null) {
-            updatedEvent.setLat(eventDto.getLocation().getLat());
-            updatedEvent.setLon(eventDto.getLocation().getLon());
-        }
-        if (eventDto.getPaid() != null) updatedEvent.setPaid(eventDto.getPaid());
-        if (eventDto.getParticipantLimit() != null) updatedEvent.setParticipantLimit(eventDto.getParticipantLimit());
-        if (eventDto.getRequestModeration() != null) updatedEvent.setRequestModeration(eventDto.getRequestModeration());
-        if (eventDto.getStateAction() != null) {
-            if (eventDto.getStateAction().equals(UserStateAction.SEND_TO_REVIEW)) {
-                updatedEvent.setState(EventState.PENDING);
-            } else {
-                updatedEvent.setState(EventState.CANCELED);
-            }
-        }
-        if (eventDto.getTitle() != null) updatedEvent.setTitle(eventDto.getTitle());
-        return eventMapper.mapToFullDto(updatedEvent);
     }
 
     @Override
@@ -226,31 +187,55 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public EventFullDto updateCurrentUserEvent(Long userId, Long eventId, UserUpdateRequestEventDto eventDto) {
+        Event updatedEvent = eventMapper.mapToEvent(getCurrentUserEvent(userId, eventId));
+        Optional.ofNullable(updatedEvent.getPublishedOn()).ifPresent(e -> {
+            throw new EventAlreadyPublishedException(String.format("Cannot update event with id=%d because it's not in the right state: PUBLISHED", eventId));
+        });
+        Optional.ofNullable(eventDto.getAnnotation()).ifPresent(updatedEvent::setAnnotation);
+        Optional.ofNullable(eventDto.getCategory()).ifPresent(catId -> categoryMapper.mapToCategory(categoryService.getCategory(catId)));
+        Optional.ofNullable(eventDto.getDescription()).ifPresent(updatedEvent::setDescription);
+        Optional.ofNullable(eventDto.getEventDate()).ifPresent(eventDate -> {
+            if (eventDate.minusHours(2).isBefore(LocalDateTime.now())) {
+                throw new BadTimeException("Еhe date and time for which the event is scheduled cannot be earlier than two hours from the current moment");
+            }
+            updatedEvent.setEventDate(eventDate);
+        });
+        Optional.ofNullable(eventDto.getLocation()).ifPresent(updatedEvent::setLocation);
+        Optional.ofNullable(eventDto.getPaid()).ifPresent(updatedEvent::setPaid);
+        Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(updatedEvent::setParticipantLimit);
+        Optional.ofNullable(eventDto.getRequestModeration()).ifPresent(updatedEvent::setRequestModeration);
+        Optional.ofNullable(eventDto.getStateAction()).ifPresent(state -> {
+            if (state.equals(UserStateAction.SEND_TO_REVIEW)) {
+                updatedEvent.setState(EventState.PENDING);
+            } else {
+                updatedEvent.setState(EventState.CANCELED);
+            }
+        });
+        Optional.ofNullable(eventDto.getTitle()).ifPresent(updatedEvent::setTitle);
+        return eventMapper.mapToFullDto(updatedEvent);
+    }
+
     @SneakyThrows
     @Override
     public EventFullDto updateEventByAdmin(Long eventId, AdminUpdateRequestEventDto eventDto) {
         Event updatedEvent = eventMapper.mapToEvent(getEventById(eventId));
-        if (eventDto.getAnnotation() != null) updatedEvent.setAnnotation(eventDto.getAnnotation());
-        if (eventDto.getCategory() != null)
-            updatedEvent.setCategory(
-                    categoryMapper.mapToCategory(
-                            categoryService.getCategory(eventDto.getCategory())));
-        if (eventDto.getDescription() != null) updatedEvent.setDescription(eventDto.getDescription());
-        if (eventDto.getEventDate() != null) {
-            if (eventDto.getEventDate().minusHours(2).isBefore(LocalDateTime.now())) {
+        Optional.ofNullable(eventDto.getAnnotation()).ifPresent(updatedEvent::setAnnotation);
+        Optional.ofNullable(eventDto.getCategory()).ifPresent(catId -> categoryMapper.mapToCategory(categoryService.getCategory(catId)));
+        Optional.ofNullable(eventDto.getDescription()).ifPresent(updatedEvent::setDescription);
+        Optional.ofNullable(eventDto.getEventDate()).ifPresent(eventDate -> {
+            if (eventDate.minusHours(2).isBefore(LocalDateTime.now())) {
                 throw new BadTimeException("Еhe date and time for which the event is scheduled cannot be earlier than two hours from the current moment");
             }
-            updatedEvent.setEventDate(eventDto.getEventDate());
-        }
-        if (eventDto.getLocation() != null) {
-            updatedEvent.setLat(eventDto.getLocation().getLat());
-            updatedEvent.setLon(eventDto.getLocation().getLon());
-        }
-        if (eventDto.getPaid() != null) updatedEvent.setPaid(eventDto.getPaid());
-        if (eventDto.getParticipantLimit() != null) updatedEvent.setParticipantLimit(eventDto.getParticipantLimit());
-        if (eventDto.getRequestModeration() != null) updatedEvent.setRequestModeration(eventDto.getRequestModeration());
-        if (eventDto.getStateAction() != null) {
-            if (eventDto.getStateAction().equals(AdminStateAction.PUBLISH_EVENT)) {
+            updatedEvent.setEventDate(eventDate);
+        });
+        Optional.ofNullable(eventDto.getLocation()).ifPresent(updatedEvent::setLocation);
+        Optional.ofNullable(eventDto.getPaid()).ifPresent(updatedEvent::setPaid);
+        Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(updatedEvent::setParticipantLimit);
+        Optional.ofNullable(eventDto.getRequestModeration()).ifPresent(updatedEvent::setRequestModeration);
+        Optional.ofNullable(eventDto.getStateAction()).ifPresent(state -> {
+            if (state.equals(AdminStateAction.PUBLISH_EVENT)) {
                 if (updatedEvent.getPublishedOn() != null) {
                     throw new EventAlreadyPublishedException("Cannot publish the event because it's not in the right state: PUBLISHED");
                 }
@@ -259,14 +244,14 @@ public class EventServiceImpl implements EventService {
                 }
                 updatedEvent.setState(EventState.PUBLISHED);
                 updatedEvent.setPublishedOn(LocalDateTime.now());
-            } else if (eventDto.getStateAction().equals(AdminStateAction.REJECT_EVENT)) {
+            } else if (state.equals(AdminStateAction.REJECT_EVENT)) {
                 if (updatedEvent.getPublishedOn() != null) {
                     throw new EventAlreadyPublishedException("Cannot publish the event because it's not in the right state: PUBLISHED");
                 }
                 updatedEvent.setState(EventState.CANCELED);
             }
-        }
-        if (eventDto.getTitle() != null) updatedEvent.setTitle(eventDto.getTitle());
+        });
+        Optional.ofNullable(eventDto.getTitle()).ifPresent(updatedEvent::setTitle);
         return eventMapper.mapToFullDto(eventRepository.save(updatedEvent));
     }
 
