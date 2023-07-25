@@ -23,7 +23,7 @@ public interface EventMapper {
     @Mapping(target = "createdOn", ignore = true)
     @Mapping(target = "confirmedRequests", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "category", target = "category.id")
+    @Mapping(target = "category.id", source = "category")
     Event mapToCreateEvent(NewEventDto newEventDto);
 
 }
